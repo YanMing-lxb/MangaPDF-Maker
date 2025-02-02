@@ -1,4 +1,4 @@
-<!--
+/*
  *  =======================================================================
  *  ·······································································
  *  ·······································································
@@ -18,34 +18,52 @@
  * 
  *  -----------------------------------------------------------------------
  * Author       : 焱铭
- * Date         : 2025-02-03 00:47:04 +0800
- * LastEditTime : 2025-02-03 00:47:07 +0800
+ * Date         : 2025-02-03 00:46:56 +0800
+ * LastEditTime : 2025-02-03 00:46:58 +0800
  * Github       : https://github.com/YanMing-lxb/
- * FilePath     : /MangaPDF-Maker/README.md
+ * FilePath     : /MangaPDF-Maker/pyproject.toml
  * Description  : 
  *  -----------------------------------------------------------------------
- -->
+ */
 
-# Flet app
+[project]
+name = "test"
+version = "0.1.0"
+description = ""
+readme = "README.md"
+requires-python = ">=3.9"
+authors = [
+    { name = "Flet developer", email = "you@example.com" }
+]
+dependencies = [
+  "flet==0.26.0"
+]
 
-Flet app using Flet extension.
+[tool.flet]
+# org name in reverse domain name notation, e.g. "com.mycompany".
+# Combined with project.name to build bundle ID for iOS and Android apps
+org = "com.mycompany"
 
-To run the app:
+# project display name that is used as an app title on Android and iOS home screens,
+# shown in window titles and about app dialogs on desktop.
+product = "test"
 
-1. Install dependencies from pyproject.toml:
+# company name to display in about app dialogs
+company = "Flet"
 
-```
-poetry install
-```
+# copyright text to display in about app dialogs
+copyright = "Copyright (C) 2025 by Flet"
 
-2. Build app:
+[tool.flet.app]
+path = "src"
 
-```
-poetry run flet build macos -v
-```
+[tool.uv]
+dev-dependencies = [
+    "flet[all]==0.26.0",
+]
 
-3. Run app:
+[tool.poetry]
+package-mode = false
 
-```
-poetry run flet run
-```
+[tool.poetry.group.dev.dependencies]
+flet = {extras = ["all"], version = "0.26.0"}
