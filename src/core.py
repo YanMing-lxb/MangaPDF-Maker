@@ -19,7 +19,7 @@
  -----------------------------------------------------------------------
 Author       : 焱铭
 Date         : 2025-02-03 00:43:28 +0800
-LastEditTime : 2025-02-03 00:43:30 +0800
+LastEditTime : 2025-02-04 12:07:41 +0800
 Github       : https://github.com/YanMing-lxb/
 FilePath     : /MangaPDF-Maker/src/core.py
 Description  : 
@@ -277,38 +277,50 @@ class PdfProcessing:
         print("已为PDF文件添加目录！")
 
 
-
 def all_run(input_path, output_path, temp_path, less_suffixes, more_suffix, s_pic, right_to_left, finally_file_name):
-    time1 = time.time()
-    fs = FileSearcher()
-    pic_files = fs.search_files_in_subfolders(input_path)
-    pp = PictureProcessing()
-    pp.modify_suffix(input_path, less_suffixes, more_suffix)
+    try:
+        time1 = time.time()
+        fs = FileSearcher()
+        pic_files = fs.search_files_in_subfolders(input_path)
+        
+        pp = PictureProcessing()
+        pp.modify_suffix(input_path, less_suffixes, more_suffix)
 
-    if s_pic:
-        pp.split_picture(pic_files, temp_path, more_suffix, right_to_left)
-        pic_files = fs.search_files_in_subfolders(temp_path)
-    else:
-        if not Path(temp_path).exists():
-            Path(temp_path).mkdir()
+        if s_pic:
+            pp.split_picture(pic_files, temp_path, more_suffix, right_to_left)
+            pic_files = fs.search_files_in_subfolders(temp_path)
+        else:
+            if not Path(temp_path).exists():
+                Path(temp_path).mkdir()
 
-    pdfp = PdfProcessing()
-    pdfp.convert_pdf(temp_path, pic_files, more_suffix)
-    pdf_files = fs.search_pdf(temp_path)
-    bookmark_num = pdfp.merge_pdf(pdf_files, output_path, finally_file_name)
-    pdfp.add_bookmark(output_path, bookmark_num, finally_file_name)
-    shutil.rmtree(temp_path)
-    time2 = time.time()
-    current_time = time2 - time1
-    file_name = Path(input_path).name
-    print("************** " + file_name + ".pdf 已生成 **************")
-    print("************** 总共耗时" + str(int(current_time // 60 // 60)) + " 小时  " + str(
-        int(current_time // 60 % 60)) + " 分钟  " + str(
-        round(current_time % 60)) + " 秒 **************")
-    for i in range(2):
-        print('////////////////////////////////////////////////////////////////////////////////////////////////////////////////')
-        print('----------------------------------------------------------------------------------------------------------------')
-        print('@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@')
+        pdfp = PdfProcessing()
+        pdfp.convert_pdf(temp_path, pic_files, more_suffix)
+        pdf_files = fs.search_pdf(temp_path)
+        bookmark_num = pdfp.merge_pdf(pdf_files, output_path, finally_file_name)
+        pdfp.add_bookmark(output_path, bookmark_num, finally_file_name)
+        
+        shutil.rmtree(temp_path)
+        time2 = time.time()
+        current_time = time2 - time1
+        file_name = Path(input_path).name
+        print("************** " + file_name + ".pdf 已生成 **************")
+        print("************** 总共耗时" + str(int(current_time // 60 // 60)) + " 小时  " + str(
+            int(current_time // 60 % 60)) + " 分钟  " + str(
+            round(current_time % 60)) + " 秒 **************")
+        
+    except FileNotFoundError as e:
+        print(f"文件未找到错误: {e}")
+    except PermissionError as e:
+        print(f"权限错误: {e}")
+    except Exception as e:
+        print(f"发生了一个错误: {e}")
+    finally:
+        # 确保临时文件夹在任何情况下都被删除
+        if Path(temp_path).exists():
+            try:
+                shutil.rmtree(temp_path)
+            except Exception as e:
+                print(f"删除临时文件夹时发生错误: {e}")
 
 
 

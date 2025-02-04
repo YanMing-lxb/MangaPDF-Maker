@@ -18,8 +18,8 @@
  * 
  *  -----------------------------------------------------------------------
  * Author       : 焱铭
- * Date         : 2025-02-03 00:46:56 +0800
- * LastEditTime : 2025-02-03 00:46:58 +0800
+ * Date         : 2025-02-03 14:33:16 +0800
+ * LastEditTime : 2025-02-03 14:33:17 +0800
  * Github       : https://github.com/YanMing-lxb/
  * FilePath     : /MangaPDF-Maker/pyproject.toml
  * Description  : 
@@ -27,7 +27,7 @@
  */
 
 [project]
-name = "test"
+name = "mangapdf-maker"
 version = "0.1.0"
 description = ""
 readme = "README.md"
@@ -46,7 +46,7 @@ org = "com.mycompany"
 
 # project display name that is used as an app title on Android and iOS home screens,
 # shown in window titles and about app dialogs on desktop.
-product = "test"
+product = "mangapdf-maker"
 
 # company name to display in about app dialogs
 company = "Flet"
