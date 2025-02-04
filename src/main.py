@@ -1,5 +1,4 @@
 
-import logging
 import threading
 import flet as ft
 from pathlib import Path
@@ -9,17 +8,18 @@ from core import PictureProcessing, all_run
 logger = setup_logger(True)
 
 def main(page: ft.Page):
-    pp = PictureProcessing()
-
-    page.title = "MangaPDF Maker"
-    page.scroll = "adaptive"
-    page.theme_mode = ft.ThemeMode.SYSTEM
     if page.platform == ft.PagePlatform.LINUX or page.platform == ft.PagePlatform.MACOS or page.platform == ft.PagePlatform.WINDOWS:
         page.window.height = 450
         page.window.width = 500
         page.window.center()
     else:
         page.add(ft.TextButton("Material Button"))
+
+    page.title = "MangaPDF Maker"
+    page.scroll = "adaptive"
+    page.theme_mode = ft.ThemeMode.SYSTEM
+    pp = PictureProcessing()
+    
 
     class GuiAction:
 
@@ -135,7 +135,7 @@ def main(page: ft.Page):
 
     tf_more_suffix = ft.TextField(label="多数图片后缀", dense=True, adaptive=True)
     tf_less_suffix = ft.TextField(label="少数图片后缀", dense=True, adaptive=True)
-    tf_output_name = ft.TextField(label="输出文件名称", dense=True, adaptive=True, disabled=True)
+    tf_output_name = ft.TextField(label="输出文件名称", dense=True, adaptive=True, disabled=True, expand=True)
 
     eb_check_pic = ft.ElevatedButton(text="检查图片", icon='fact_check', on_click=ga.eb_check_pic_click, adaptive=True, disabled=True)
     eb_delete_error_pics = ft.ElevatedButton(text="删除异常", icon="cleaning_services", on_click=lambda e: page.open(dlg_delete_error_pics), adaptive=True, disabled=True)
@@ -172,12 +172,7 @@ def main(page: ft.Page):
 
     row_output_name = ft.Row([sw_output_name, tf_output_name], expand=True)
     row_pic_operation = ft.Row([col_pic_operation, col_pic_suffix])
-    col_operation = ft.Column([
-        tt_logo,
-        row_pic_operation,
-        row_output_name,
-        col_input_path,
-    ])
+    col_operation = ft.Column([tt_logo,row_pic_operation,row_output_name,col_input_path,])
 
     row_check = ft.Row([eb_check_pic, ft.Placeholder(fallback_height=20, expand=True)])
     row_delete = ft.Row([eb_delete_error_pics, ft.Placeholder(fallback_height=20, expand=True)])

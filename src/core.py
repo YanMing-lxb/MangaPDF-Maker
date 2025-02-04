@@ -26,14 +26,12 @@ Description  :
  -----------------------------------------------------------------------
 '''
 
-import threading
 from PIL import Image
 from pathlib import Path
 import re
 from PyPDF2 import PdfReader, PdfWriter
 import time
 import shutil
-import PySimpleGUI as sg
 
 
 pdf_files = [] # PDF分文件 数组
