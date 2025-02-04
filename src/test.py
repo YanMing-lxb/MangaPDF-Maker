@@ -1,48 +1,37 @@
 import flet as ft
 
+
 def main(page: ft.Page):
-    def page_resize(e):
-        pw.value = f"{page.width} px"
-        pw.update()
+    page.title = "AlertDialog examples"
+    page.horizontal_alignment = ft.CrossAxisAlignment.CENTER
 
-    page.on_resize = page_resize
+    dlg = ft.AlertDialog(
+        title=ft.Text("Hi, this is a non-modal dialog!"),
+        on_dismiss=lambda e: page.add(ft.Text("Non-modal dialog dismissed")),
+    )
 
-    pw = ft.Text(bottom=50, right=50, style="displaySmall")
-    page.overlay.append(pw)
-    page.add(
-        ft.ResponsiveRow(
-            [
-                ft.Container(
-                    ft.Text("Column 1"),
-                    padding=5,
-                    bgcolor=ft.Colors.YELLOW,
-                ),
-                ft.Container(
-                    ft.Text("Column 2"),
-                    padding=5,
-                    bgcolor=ft.Colors.GREEN,
-                ),
-                ft.Container(
-                    ft.Text("Column 3"),
-                    padding=5,
-                    bgcolor=ft.Colors.BLUE,
-                ),
-                ft.Container(
-                    ft.Text("Column 4"),
-                    padding=5,
-                    bgcolor=ft.Colors.PINK_300,
-                ),
-            ],
-        ),
-        ft.ResponsiveRow(
-            [
-                ft.TextField(label="TextField 1", col={"md": 4}),
-                ft.TextField(label="TextField 2", col={"md": 4}),
-                ft.TextField(label="TextField 3", col={"md": 4}),
-            ],
-            run_spacing={"xs": 10},
+    def handle_close(e):
+        page.close(dlg_modal)
+        page.add(ft.Text(f"Modal dialog closed with action: {e.control.text}"))
+
+    dlg_modal = ft.AlertDialog(
+        modal=True,
+        title=ft.Text("Please confirm"),
+        content=ft.Text("Do you really want to delete all those files?"),
+        actions=[
+            ft.TextButton("Yes", on_click=handle_close),
+            ft.TextButton("No", on_click=handle_close),
+        ],
+        actions_alignment=ft.MainAxisAlignment.END,
+        on_dismiss=lambda e: page.add(
+            ft.Text("Modal dialog dismissed"),
         ),
     )
-    page_resize(None)
 
-ft.app(main)
+    page.add(
+        ft.ElevatedButton("Open dialog", on_click=lambda e: page.open(dlg)),
+        ft.ElevatedButton("Open modal dialog", on_click=lambda e: page.open(dlg_modal)),
+    )
+
+
+ft.app(target=main)

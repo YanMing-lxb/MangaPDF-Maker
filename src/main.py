@@ -1,36 +1,12 @@
-'''
- =======================================================================
- ·······································································
- ·······································································
- ····Y88b···d88P················888b·····d888·d8b·······················
- ·····Y88b·d88P·················8888b···d8888·Y8P·······················
- ······Y88o88P··················88888b·d88888···························
- ·······Y888P··8888b···88888b···888Y88888P888·888·88888b·····d88b·······
- ········888······"88b·888·"88b·888·Y888P·888·888·888·"88b·d88P"88b·····
- ········888···d888888·888··888·888··Y8P··888·888·888··888·888··888·····
- ········888··888··888·888··888·888···"···888·888·888··888·Y88b·888·····
- ········888··"Y888888·888··888·888·······888·888·888··888··"Y88888·····
- ·······························································888·····
- ··························································Y8b·d88P·····
- ···························································"Y88P"······
- ·······································································
- =======================================================================
 
- -----------------------------------------------------------------------
-Author       : 焱铭
-Date         : 2025-02-03 14:32:59 +0800
-LastEditTime : 2025-02-04 15:27:32 +0800
-Github       : https://github.com/YanMing-lxb/
-FilePath     : /MangaPDF-Maker/src/main.py
-Description  : 
- -----------------------------------------------------------------------
-'''
-
+import logging
 import threading
 import flet as ft
 from pathlib import Path
+from logger_config import setup_logger
 from core import PictureProcessing, all_run
 
+logger = setup_logger(True)
 
 def main(page: ft.Page):
     pp = PictureProcessing()
@@ -55,6 +31,12 @@ def main(page: ft.Page):
 
         def handle_change(self, e):
             page.close(drawer)
+        
+        def handle_delete(self, yes):
+            page.close(dlg_delete_error_pics)
+            if yes:
+                pp.delete_error_pics(self.error_pics)
+                logger.info("删除错误图片成功！")        
 
         def theme_changed(self, e):
             page.theme_mode = (ft.ThemeMode.DARK if page.theme_mode == ft.ThemeMode.LIGHT else ft.ThemeMode.LIGHT)
@@ -87,11 +69,11 @@ def main(page: ft.Page):
                 tf_less_suffix.value = '.jpg'
 
             page.update()
-            print('########## 已更改参数设置中的文本框！ ##########')
+            logger.info('########## 已更改参数设置中的文本框！ ##########')
             self.error_pics = pp.pic_check(input_path)
-
-        def eb_delete_error_pics_click(self, e):
-            pp.delete_error_pics(self.error_pics)
+            if self.error_pics:
+                tt_error_pics.value = '\n'.join(self.error_pics)
+                page.open(dlg_error_pics)
 
         def eb_run_click(self, e):
             s_pics = sw_slip_pic.value
@@ -115,7 +97,7 @@ def main(page: ft.Page):
             print('从右到左：', right_to_left)
             print('多数图片后缀：', more_suffix)
             print('少数图片后缀：', less_suffix)
-            print('开始生成 PDF 文件！')
+            logger.info('开始生成 PDF 文件！')
 
             threading.Thread(
                 target=all_run,
@@ -143,19 +125,20 @@ def main(page: ft.Page):
         weight=ft.FontWeight.BOLD,
         italic=True,
     )
+    tt_error_pics = ft.Text("")
 
     ga = GuiAction()
 
     sw_slip_pic = ft.Switch(label="切割图片", value=False, label_position=ft.LabelPosition.LEFT)
     sw_right_to_left = ft.Switch(label="从右到左", value=False, label_position=ft.LabelPosition.LEFT)
-    sw_output_name = ft.Switch(label="指定名称", value=False, label_position=ft.LabelPosition.LEFT)
+    sw_output_name = ft.Switch(label="指定名称", value=False, on_change=lambda e: (setattr(tf_output_name, 'disabled', not sw_output_name.value), page.update()) ,label_position=ft.LabelPosition.LEFT)
 
     tf_more_suffix = ft.TextField(label="多数图片后缀", dense=True, adaptive=True)
     tf_less_suffix = ft.TextField(label="少数图片后缀", dense=True, adaptive=True)
-    tf_output_name = ft.TextField(label="输出文件名称", dense=True, adaptive=True)
+    tf_output_name = ft.TextField(label="输出文件名称", dense=True, adaptive=True, disabled=True)
 
     eb_check_pic = ft.ElevatedButton(text="检查图片", icon='fact_check', on_click=ga.eb_check_pic_click, adaptive=True, disabled=True)
-    eb_delete_error_pics = ft.ElevatedButton(text="删除异常", icon="cleaning_services", on_click=ga.eb_delete_error_pics_click, adaptive=True, disabled=True)
+    eb_delete_error_pics = ft.ElevatedButton(text="删除异常", icon="cleaning_services", on_click=lambda e: page.open(dlg_delete_error_pics), adaptive=True, disabled=True)
     eb_run = ft.ElevatedButton(text="处理文件", icon="directions_run", on_click=ga.eb_run_click, adaptive=True, disabled=True)
     pick_files_dialog = ft.FilePicker(on_result=ga.pick_files_result)
     eb_input_path = ft.ElevatedButton(text="输入路径", icon=ft.Icons.UPLOAD_FILE, on_click=lambda _: pick_files_dialog.get_directory_path(initial_directory=Path.home(), dialog_title="选择图片所在文件夹"), adaptive=True)
@@ -164,6 +147,23 @@ def main(page: ft.Page):
     ib_theme = ft.IconButton(icon=ft.Icons.LIGHT_MODE, selected_icon=ft.Icons.MODE_NIGHT, selected=False, on_click=ga.theme_changed, tooltip="切换主题")
 
     tt_selected_directory = ft.Text(max_lines=1, overflow=ft.TextOverflow.ELLIPSIS)  # 显示选中的目录路径
+
+    dlg_error_pics = ft.AlertDialog(
+        title=ft.Text("异常图片"),
+        content=tt_error_pics,
+    )
+
+    dlg_delete_error_pics = ft.AlertDialog(
+        modal=True,
+        title=ft.Text("删除异常图片"),
+        content=ft.Text("请确认是否清除异常图片？注意此操作不可恢复！"),
+        actions=[
+            ft.TextButton("Yes", on_click=lambda e: ga.handle_delete(True)),
+
+            ft.TextButton("No", on_click=lambda e:ga.handle_delete(False)),
+        ],
+        actions_alignment=ft.MainAxisAlignment.END,
+    )
 
     col_input_path = ft.Row([eb_input_path, tt_selected_directory])
 
