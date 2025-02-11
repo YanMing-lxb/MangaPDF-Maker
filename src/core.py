@@ -19,7 +19,7 @@
  -----------------------------------------------------------------------
 Author       : 焱铭
 Date         : 2025-02-03 00:43:28 +0800
-LastEditTime : 2025-02-04 12:07:41 +0800
+LastEditTime : 2025-02-06 21:53:06 +0800
 Github       : https://github.com/YanMing-lxb/
 FilePath     : /MangaPDF-Maker/src/core.py
 Description  : 
@@ -140,16 +140,14 @@ class PictureProcessing:
     def split_picture(self, pic_files, temp_path, more_suffix, right_to_left):  # 分割图片并改变阅读顺序
         start = time.perf_counter()
         temp_path = Path(temp_path)
-        if not temp_path.exists():  # 判断要保存到的文件夹是否存在
-            temp_path.mkdir()  # 创建 temp_path 文件夹
+        temp_path.mkdir(parents=True, exist_ok=True)
         print("************** 分割并改变阅读顺序中 **************")
         for path in pic_files:
             path = Path(path)
             file_name = path.name  # 获取文件路径中的文件名
             file_path = temp_path / file_name  # 组合成新的子文件夹地址的路径
             newdir = temp_path / file_name  # 组合成新的子文件夹地址的路径
-            if not newdir.exists():  # 如果新的子文件夹不存在，创建新的子文件夹
-                newdir.mkdir()
+            newdir.mkdir(parents=True, exist_ok=True)
             for z, file in enumerate(path.rglob('*' + more_suffix), 1):  # 循环路径下所有指定后缀文件
                 filepath = file
                 img = Image.open(filepath)  # 打开该文件
@@ -288,8 +286,7 @@ def all_run(input_path, output_path, temp_path, less_suffixes, more_suffix, s_pi
             pp.split_picture(pic_files, temp_path, more_suffix, right_to_left)
             pic_files = fs.search_files_in_subfolders(temp_path)
         else:
-            if not Path(temp_path).exists():
-                Path(temp_path).mkdir()
+            Path(temp_path).mkdir(parents=True, exist_ok=True)
 
         pdfp = PdfProcessing()
         pdfp.convert_pdf(temp_path, pic_files, more_suffix)
