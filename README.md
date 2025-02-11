@@ -43,7 +43,7 @@ poetry install
 ```
 poetry run flet build macos -v
 
-python -m nuitka --standalone --onefile --windows-console-mode=disable --nofollow-import-to=numpy --remove-output --windows-icon-from-ico=./src/assets/ico.ico --include-data-dir=./src/assets=assets --company-name="YanMing" --product-name="MangaPDF Maker" --file-version="1.4.1" --product-version="1.4.1" --file-description="MangaPDF Maker" --output-filename="MangaPDF Maker" ./src/main.py 
+python -m nuitka --standalone --onefile --windows-console-mode=hide --nofollow-import-to=numpy --remove-output --windows-icon-from-ico=./src/assets/ico.ico --include-data-dir=./src/assets=assets --company-name="YanMing" --product-name="MangaPDF Maker" --file-version="1.4.1" --product-version="1.4.1" --file-description="MangaPDF Maker" --output-filename="MangaPDF Maker" ./src/main.py 
 
 ```
 
