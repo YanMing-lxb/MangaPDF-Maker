@@ -19,7 +19,7 @@
  -----------------------------------------------------------------------
 Author       : 焱铭
 Date         : 2025-02-03 00:43:28 +0800
-LastEditTime : 2025-02-06 21:53:06 +0800
+LastEditTime : 2025-02-11 15:41:51 +0800
 Github       : https://github.com/YanMing-lxb/
 FilePath     : /MangaPDF-Maker/src/core.py
 Description  : 
@@ -29,7 +29,7 @@ Description  :
 from PIL import Image
 from pathlib import Path
 import re
-from PyPDF2 import PdfReader, PdfWriter
+from pypdf import PdfReader, PdfWriter
 import time
 import shutil
 
