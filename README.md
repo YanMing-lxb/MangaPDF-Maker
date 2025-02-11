@@ -19,7 +19,7 @@
  *  -----------------------------------------------------------------------
  * Author       : 焱铭
  * Date         : 2025-02-03 14:33:21 +0800
- * LastEditTime : 2025-02-03 14:33:23 +0800
+ * LastEditTime : 2025-02-11 19:17:58 +0800
  * Github       : https://github.com/YanMing-lxb/
  * FilePath     : /MangaPDF-Maker/README.md
  * Description  : 
@@ -42,6 +42,9 @@ poetry install
 
 ```
 poetry run flet build macos -v
+
+python -m nuitka --standalone --onefile --windows-console-mode=disable --nofollow-import-to=numpy --remove-output --windows-icon-from-ico=./src/assets/ico.ico --include-data-dir=./src/assets=assets --company-name="YanMing" --product-name="MangaPDF Maker" --file-version="1.4.1" --product-version="1.4.1" --file-description="MangaPDF Maker" --output-filename="MangaPDF Maker" ./src/main.py 
+
 ```
 
 3. Run app:
