@@ -14,7 +14,6 @@
 
 ## 🖥️ 界面操作指南
 
-
 ## 📦 开发指南
 
 ### 前置要求
@@ -23,10 +22,10 @@
 - Flet 0.27.1+
 - pypdf 5.3.0+
 
-
 ### 安装步骤
 
 克隆仓库
+
 ```bash
 git clone https://github.com/YanMing-lxb/MangaPDF-Maker.git
 cd MangaPDF-Maker
@@ -37,7 +36,7 @@ cd MangaPDF-Maker
 #### Windows单文件打包
 
 ```bash
-python -m nuitka --standalone --onefile --windows-console-mode=hide --windows-icon-from-ico=./src/assets/ico.ico --include-data-dir=./src/assets=assets --company-name="YanMing" --product-name="MangaPDF Maker" --file-version="1.4.1" --product-version="1.4.1" --output-filename="MangaPDF Maker" ./src/main.py
+python -m nuitka --standalone --onefile  --windows-console-mode=disable  --windows-icon-from-ico=./src/assets/ico.ico --include-data-dir=./src/assets=assets --company-name="YanMing" --product-name="MangaPDF Maker" --file-version="1.4.1" --product-version="1.4.1" --copyright="YanMing" --output-filename="MangaPDF Maker" ./src/main.py
 ``
 
 #### 使用Flet打包
@@ -46,14 +45,20 @@ python -m nuitka --standalone --onefile --windows-console-mode=hide --windows-ic
 flet pack -i ./src/assets/ico.ico -n "MangaPDF Maker" ./src/main.py
 ```
 
-### Pyinstaller打包
 ```bash
-pyinstaller --onefile --noconsole --upx-dir tools/upx -i src/assets/ico.ico --add-data "src/assets;assets" src/main.py
+flet build -v --product "MangaPDF Maker" --product "MangaPDF Maker" 
+```
+
+### Pyinstaller打包
+
+```bash
+pyinstaller --onefile --noconsole --clean -i src/assets/ico.ico -n "MangaPDF Maker" --add-data "src/assets;assets" src/main.py 
 ```
 
 ### Nuitka打包
+
 ```bash
-python -m nuitka --standalone --onefile --windows-disable-console --windows-icon-from-ico=./src/assets/ico.ico --include-data-dir=./src/assets=assets --output-filename="MangaPDF Maker" ./src/main.py
+python -m nuitka --standalone --onefile --windows-disable-console --user-package-configuration-file=./scripts/nuitka_flet.yml --windows-icon-from-ico=./src/assets/ico.ico --include-data-dir=./src/assets=assets --output-filename="MangaPDF Maker" ./src/main.py
 ```
 
 ## 🤝 参与贡献
@@ -68,8 +73,10 @@ python -m nuitka --standalone --onefile --windows-disable-console --windows-icon
 4. 发起Pull Request
 
 ## 📄 许可证
+
 本项目采用 GPL3.0 License
 
 ## 🌟 致谢
+
 [Flet](https://flet.dev/) - 优秀的跨平台GUI框架
 [pypdf](https://github.com/py-pdf/pypdf) - PDF操作库
