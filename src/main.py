@@ -5,7 +5,7 @@ import flet as ft
 from pathlib import Path
 from core import PictureProcessing, all_run
 
-current_version = "v0.1.4"  # 版本号变量
+current_version = "v1.4.1"  # 版本号变量
 
 
 async def get_latest_version():
@@ -58,12 +58,13 @@ async def get_latest_version():
 
 def main(page: ft.Page):
     if page.platform == ft.PagePlatform.LINUX or page.platform == ft.PagePlatform.MACOS or page.platform == ft.PagePlatform.WINDOWS:
+        if page.platform == ft.PagePlatform.WINDOWS:
+            page.window.icon = "ico.ico"  # 窗口图标
         page.window.height = 500
         page.window.width = 500
         page.window.center()
     else:
         page.add(ft.TextButton("Material Button"))
-
     page.title = "MangaPDF Maker"
     page.scroll = "adaptive"
     page.theme_mode = ft.ThemeMode.SYSTEM
