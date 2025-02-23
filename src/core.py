@@ -18,6 +18,33 @@
 
  -----------------------------------------------------------------------
 Author       : 焱铭
+Date         : 2025-02-06 15:17:19 +0800
+LastEditTime : 2025-02-23 15:31:19 +0800
+Github       : https://github.com/YanMing-lxb/
+FilePath     : /MangaPDF-Maker/src/core.py
+Description  : 
+ -----------------------------------------------------------------------
+'''
+'''
+ =======================================================================
+ ·······································································
+ ·······································································
+ ····Y88b···d88P················888b·····d888·d8b·······················
+ ·····Y88b·d88P·················8888b···d8888·Y8P·······················
+ ······Y88o88P··················88888b·d88888···························
+ ·······Y888P··8888b···88888b···888Y88888P888·888·88888b·····d88b·······
+ ········888······"88b·888·"88b·888·Y888P·888·888·888·"88b·d88P"88b·····
+ ········888···d888888·888··888·888··Y8P··888·888·888··888·888··888·····
+ ········888··888··888·888··888·888···"···888·888·888··888·Y88b·888·····
+ ········888··"Y888888·888··888·888·······888·888·888··888··"Y88888·····
+ ·······························································888·····
+ ··························································Y8b·d88P·····
+ ···························································"Y88P"······
+ ·······································································
+ =======================================================================
+
+ -----------------------------------------------------------------------
+Author       : 焱铭
 Date         : 2025-02-03 00:43:28 +0800
 LastEditTime : 2025-02-23 12:38:48 +0800
 Github       : https://github.com/YanMing-lxb/
@@ -33,14 +60,14 @@ from pypdf import PdfReader, PdfWriter
 import time
 import shutil
 
-
-pdf_files = [] # PDF分文件 数组
-pic_files = [] # 图片数组
+pdf_files = []  # PDF分文件 数组
+pic_files = []  # 图片数组
 png_num = 0
 jpg_num = 0
 
 
 class FileSearcher:
+
     def __init__(self):
         """
         """
@@ -53,7 +80,7 @@ class FileSearcher:
         for index, item in enumerate(files, 1):  # 遍历文件，index 从 1 开始
             if item.is_dir():
                 dir_files.append(str(item))
-            
+
             # 更新进度条
             pb.value = index / total_files  # 计算当前进度
             page.update()  # 更新页面
@@ -72,7 +99,9 @@ class FileSearcher:
 
         return pdf_files
 
+
 class PictureProcessing:
+
     def __init__(self):
         """
         """
@@ -90,7 +119,7 @@ class PictureProcessing:
                     suffix_count[suffix] += 1
                 else:
                     suffix_count[suffix] = 1
-            
+
             # 更新进度条
             pb.value = index / total_files  # 计算当前进度
             page.update()  # 更新页面
@@ -103,7 +132,7 @@ class PictureProcessing:
 
         # 返回结果字典
         return most_suffix, other_suffixes
-    
+
     def pic_check(self, page, pb, input_path):  # 检查错误图片
         # 重置进度条
         pb.value = 0
@@ -127,7 +156,7 @@ class PictureProcessing:
             pb.value = index / total_files  # 计算当前进度
             page.update()  # 更新页面
         return error_pics
-    
+
     def delete_error_pics(self, error_pics):  # 删除错误图片
         for i, pic in enumerate(error_pics, 1):
             pic.unlink()
@@ -141,7 +170,7 @@ class PictureProcessing:
                 # 将文件后缀改为 more_suffix 中的第一个元素
                 new_file_path = file_path.with_suffix(more_suffix[0])
                 file_path.rename(new_file_path)
-            
+
             # 更新进度条
             pb.value = index / total_files  # 计算当前进度
             page.update()  # 更新页面
@@ -184,7 +213,7 @@ class PictureProcessing:
                         else:
                             region.save(newdir / f'_{2 * z - 1:03d}{more_suffix}')
                 img.close()  # 关闭已打开的图片，防止占用内存
-                
+
                 # 更新进度条
                 processed_files += 1
                 pb.value = processed_files / total_files  # 计算当前进度
@@ -192,6 +221,7 @@ class PictureProcessing:
 
 
 class PdfProcessing:
+
     def __init__(self):
         """
         """
@@ -236,7 +266,9 @@ class PdfProcessing:
 
     def merge_pdf(self, page, pb, pdf_files, output_path, finally_file_name):  # 合并pdf
         print("************** 合并pdf文档中 **************")
-        bookmark_num = [0, ]
+        bookmark_num = [
+            0,
+        ]
         output = PdfWriter()
         output_pages = 0
         merged_pdf_path = Path(output_path) / f"{finally_file_name}.pdf"
@@ -304,7 +336,7 @@ def all_run(page, pb, status, input_path, output_path, temp_path, other_suffixes
         status.value = f"{task_index+1}/{total_task} - 搜索文件夹"
         page.update()
         pic_files = fs.search_files_in_subfolders(page, pb, input_path)
-        
+
         status.value = f"{task_index+1}/{total_task} - 修改后缀"
         page.update()
         pp = PictureProcessing()
@@ -329,16 +361,14 @@ def all_run(page, pb, status, input_path, output_path, temp_path, other_suffixes
         page.update()
         bookmark_num = pdfp.merge_pdf(page, pb, pdf_files, output_path, finally_file_name)
         # pdfp.add_bookmark(output_path, bookmark_num, finally_file_name)
-        
+
         shutil.rmtree(temp_path)
         time2 = time.time()
         current_time = time2 - time1
         file_name = Path(input_path).name
         print("************** " + file_name + ".pdf 已生成 **************")
-        print("************** 总共耗时" + str(int(current_time // 60 // 60)) + " 小时  " + str(
-            int(current_time // 60 % 60)) + " 分钟  " + str(
-            round(current_time % 60)) + " 秒 **************")
-        
+        print("************** 总共耗时" + str(int(current_time // 60 // 60)) + " 小时  " + str(int(current_time // 60 % 60)) + " 分钟  " + str(round(current_time % 60)) + " 秒 **************")
+
     except FileNotFoundError as e:
         print(f"文件未找到错误: {e}")
     except PermissionError as e:
