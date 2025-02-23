@@ -37,16 +37,7 @@ cd MangaPDF-Maker
 #### Windows单文件打包
 
 ```bash
-python -m nuitka --standalone --onefile \
-  --windows-console-mode=hide \
-  --windows-icon-from-ico=./src/assets/ico.ico \
-  --include-data-dir=./src/assets=assets \
-  --company-name="YanMing" \
-  --product-name="MangaPDF Maker" \
-  --file-version="1.4.1" \
-  --product-version="1.4.1" \
-  --output-filename="MangaPDF Maker" \
-  ./src/main.py
+python -m nuitka --standalone --onefile --windows-console-mode=hide --windows-icon-from-ico=./src/assets/ico.ico --include-data-dir=./src/assets=assets --company-name="YanMing" --product-name="MangaPDF Maker" --file-version="1.4.1" --product-version="1.4.1" --output-filename="MangaPDF Maker" ./src/main.py
 ```
 
 #### 使用Flet打包
