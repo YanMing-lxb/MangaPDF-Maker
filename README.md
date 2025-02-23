@@ -38,12 +38,22 @@ cd MangaPDF-Maker
 
 ```bash
 python -m nuitka --standalone --onefile --windows-console-mode=hide --windows-icon-from-ico=./src/assets/ico.ico --include-data-dir=./src/assets=assets --company-name="YanMing" --product-name="MangaPDF Maker" --file-version="1.4.1" --product-version="1.4.1" --output-filename="MangaPDF Maker" ./src/main.py
-```
+``
 
 #### 使用Flet打包
 
 ```bash
 flet pack -i ./src/assets/ico.ico -n "MangaPDF Maker" ./src/main.py
+```
+
+### Pyinstaller打包
+```bash
+pyinstaller --onefile --noconsole --upx-dir tools/upx -i src/assets/ico.ico --add-data "src/assets;assets" src/main.py
+```
+
+### Nuitka打包
+```bash
+python -m nuitka --standalone --onefile --windows-disable-console --windows-icon-from-ico=./src/assets/ico.ico --include-data-dir=./src/assets=assets --output-filename="MangaPDF Maker" ./src/main.py
 ```
 
 ## 🤝 参与贡献
