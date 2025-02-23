@@ -3,10 +3,8 @@ import requests
 import threading
 import flet as ft
 from pathlib import Path
-from logger_config import setup_logger
 from core import PictureProcessing, all_run
 
-logger = setup_logger(True)
 current_version = "v0.1.4"  # 版本号变量
 
 
@@ -26,7 +24,7 @@ async def get_latest_version():
             release_data = release_response.json()
             if "tag_name" in release_data:
                 return release_data["tag_name"]
-            logger.warning("Release存在但缺少tag_name字段")
+            print("Release存在但缺少tag_name字段")
 
         # 处理404响应（没有release时尝试获取tags）
         elif release_response.status_code == 404:
@@ -37,23 +35,23 @@ async def get_latest_version():
                 tags_data = tags_response.json()
                 if tags_data:
                     return tags_data[0].get("name", current_version)
-                logger.warning("仓库存在但没有可用标签")
+                print("仓库存在但没有可用标签")
 
-            logger.error(f"标签请求失败: {tags_response.status_code}")
+            print(f"标签请求失败: {tags_response.status_code}")
 
         # 处理其他错误状态码
         else:
-            logger.error(f"Release请求失败: {release_response.status_code}")
-            logger.debug(f"响应内容: {release_response.text[:200]}")
+            print(f"Release请求失败: {release_response.status_code}")
+            print(f"响应内容: {release_response.text[:200]}")
 
         return current_version
 
     except requests.exceptions.RequestException as re:
-        logger.error(f"网络请求异常: {str(re)}")
+        print(f"网络请求异常: {str(re)}")
     except json.JSONDecodeError:
-        logger.error("响应内容JSON解析失败")
+        print("响应内容JSON解析失败")
     except Exception as e:
-        logger.error(f"意外错误: {str(e)}")
+        print(f"意外错误: {str(e)}")
 
     return current_version
 
