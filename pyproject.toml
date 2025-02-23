@@ -8,7 +8,7 @@ authors = [
     { name = "YanMing", email = "you@example.com" }
 ]
 dependencies = [
-  "flet==0.26.0",
+  "flet==0.27.1",
   "Pillow==11.1.0",
   "pypdf==5.3.0",
   "rich==13.9.4"
