@@ -1,62 +1,49 @@
-'''
- =======================================================================
- ·······································································
- ·······································································
- ····Y88b···d88P················888b·····d888·d8b·······················
- ·····Y88b·d88P·················8888b···d8888·Y8P·······················
- ······Y88o88P··················88888b·d88888···························
- ·······Y888P··8888b···88888b···888Y88888P888·888·88888b·····d88b·······
- ········888······"88b·888·"88b·888·Y888P·888·888·888·"88b·d88P"88b·····
- ········888···d888888·888··888·888··Y8P··888·888·888··888·888··888·····
- ········888··888··888·888··888·888···"···888·888·888··888·Y88b·888·····
- ········888··"Y888888·888··888·888·······888·888·888··888··"Y88888·····
- ·······························································888·····
- ··························································Y8b·d88P·····
- ···························································"Y88P"······
- ·······································································
- =======================================================================
-
- -----------------------------------------------------------------------
-Author       : 焱铭
-Date         : 2025-02-03 19:13:19 +0800
-LastEditTime : 2025-02-04 18:40:42 +0800
-Github       : https://github.com/YanMing-lxb/
-FilePath     : /MangaPDF-Maker/src/test.py
-Description  : 
- -----------------------------------------------------------------------
-'''
-
 import flet as ft
+from time import sleep
 
 def main(page: ft.Page):
-    page.title = "Flet 计数器示例"
-    page.vertical_alignment = ft.MainAxisAlignment.CENTER
-    if page.platform == ft.PagePlatform.LINUX or page.platform == ft.PagePlatform.MACOS or page.platform == ft.PagePlatform.WINDOWS:
-        page.window.height = 450
-        page.window.width = 500
-        page.window.center()
-    else:
-        page.add(ft.TextButton("Material Button"))
-
-    txt_number = ft.TextField(value="0", text_align="right", width=100)
-
-    def minus_click(e):
-        txt_number.value = str(int(txt_number.value) - 1)
-        page.update()
-
-    def plus_click(e):
-        txt_number.value = str(int(txt_number.value) + 1)
-        page.update()
-
+    # 创建进度条和状态显示容器
+    pb = ft.ProgressBar(width=400, value=0)  # 初始值为0，表示静止
+    status_text = ft.Text("", color="blue")  # 用于显示任务状态
+    status_icon = ft.Text("")  # 用于显示执行状态图标
+    start_button = ft.ElevatedButton(text="启动", on_click=lambda e: start_tasks(page, pb, status_text, status_icon))  # 启动按钮
+    
+    # 页面布局
     page.add(
-        ft.Row(
-            [
-                ft.IconButton(ft.Icons.REMOVE, on_click=minus_click),
-                txt_number,
-                ft.IconButton(ft.Icons.ADD, on_click=plus_click),
-            ],
-            alignment=ft.MainAxisAlignment.CENTER,
-        )
+        ft.Text("多任务进度监控", style="headlineSmall"),
+        ft.Row([pb, status_text, status_icon]),
+        start_button
     )
+
+def start_tasks(page, pb, status_text, status_icon):
+    # 模拟多个子任务
+    tasks = [
+        ("处理图像", 2),
+        ("生成PDF", 3),
+        ("上传文件", 1),
+        ("清理缓存", 1)
+    ]
+
+    total_tasks = len(tasks)
+
+    for index, (task_name, duration) in enumerate(tasks, 1):
+        # 更新任务状态
+        status_text.value = f"{index}/{total_tasks} - {task_name}"
+        page.update()
+        
+        # 模拟任务执行
+        for i in range(0, 101):
+            pb.value = i * 0.01
+            sleep(duration / 100)
+            page.update()
+        
+        # 重置进度条
+        pb.value = 0
+        page.update()
+
+    # 所有任务完成后显示完成图标
+    status_icon.value = "✅"
+    status_icon.color = "green"
+    page.update()
 
 ft.app(target=main)

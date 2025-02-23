@@ -19,7 +19,7 @@
  -----------------------------------------------------------------------
 Author       : 焱铭
 Date         : 2025-02-03 00:43:28 +0800
-LastEditTime : 2025-02-11 15:41:51 +0800
+LastEditTime : 2025-02-23 12:38:48 +0800
 Github       : https://github.com/YanMing-lxb/
 FilePath     : /MangaPDF-Maker/src/core.py
 Description  : 
@@ -40,29 +40,28 @@ png_num = 0
 jpg_num = 0
 
 
-def progress(current, total, bar_length, elapsed_time):
-    # 计算已完成的部分和剩余的部分
-    completed = "▋" * round(current / total * bar_length)
-    remaining = "▏" * (bar_length - len(completed))
-    # 计算进度百分比
-    percentage = (current / total) * 100
-    # 使用f-string格式化输出
-    print(f"\r{percentage:^3.0f}% [{completed}{remaining}] {elapsed_time:.2f}s", end="")
-
-
 class FileSearcher:
     def __init__(self):
         """
         """
 
-    def search_files_in_subfolders(self, folder_path):
+    def search_files_in_subfolders(self, page, pb, folder_path):
         folder = Path(folder_path)
-        files = [str(item) for item in folder.rglob('*') if item.is_dir()]
+        files = list(folder.rglob('*'))  # 获取所有文件和文件夹
+        total_files = len(files)  # 总文件数
+        dir_files = []  # 用于存储符合条件的文件夹路径
+        for index, item in enumerate(files, 1):  # 遍历文件，index 从 1 开始
+            if item.is_dir():
+                dir_files.append(str(item))
+            
+            # 更新进度条
+            pb.value = index / total_files  # 计算当前进度
+            page.update()  # 更新页面
 
         # re.findall(r"\d+")会根据正则在指定字符串内查找全部的数字,返回一个列表, "\d+" 表示查找数字
-        # 根据文件名的特征取出最后一个数字进行排序即可
-        files.sort(key=lambda x: int(re.findall(r"\d+", x)[-1]))  # 更改排序方式为正常排序,如:9,10
-        return files
+        # 根据文件名的特征取出最后一个数字进行排序
+        dir_files.sort(key=lambda x: int(re.findall(r"\d+", x)[-1]))  # 更改排序方式为正常排序,如:9,10
+        return dir_files
 
     def search_pdf(self, temp_path):
         folder = Path(temp_path)
@@ -78,32 +77,45 @@ class PictureProcessing:
         """
         """
 
-    def statistics_picture(self, input_path):  # 分别统计 png 后缀与 jpg 图片的数量
-        print("************** 统计 png 后缀与 jpg 后缀图片数量中！ **************")
-        png_list = []
-        jpg_list = []
+    def statistics_picture(self, page, pb, input_path):  # 统计图片后缀数量
+        suffix_count = {}  # 用于存储后缀及其数量的字典
 
         input_path = Path(input_path)
-        for file_path in input_path.rglob('*'):
+        files = list(input_path.rglob('*'))  # 获取所有文件列表
+        total_files = len(files)  # 总文件数
+        for index, file_path in enumerate(files, 1):  # 遍历文件，index 从 1 开始
             if file_path.is_file():
                 suffix = file_path.suffix.lower()
-                if suffix == ".png":
-                    png_list.append(file_path.name)
-                elif suffix == ".jpg":
-                    jpg_list.append(file_path.name)
-        png_num = len(png_list)
-        jpg_num = len(jpg_list)
-        print('************** .png 图片数目: ' + str(png_num) + ' 张 **************')
-        print('************** .jpg 图片数目: ' + str(jpg_num) + ' 张 **************')
-        
-        return png_num, jpg_num
+                if suffix in suffix_count:
+                    suffix_count[suffix] += 1
+                else:
+                    suffix_count[suffix] = 1
+            
+            # 更新进度条
+            pb.value = index / total_files  # 计算当前进度
+            page.update()  # 更新页面
+
+        # 找到数量最多的后缀
+        print(suffix_count)
+        most_suffix = max(suffix_count, key=suffix_count.get) if suffix_count else None
+        # 其他后缀及其数量
+        other_suffixes = [suffix for suffix in suffix_count.keys() if suffix != most_suffix]
+
+        # 返回结果字典
+        return most_suffix, other_suffixes
     
-    def pic_check(self, input_path):  # 检查错误图片
+    def pic_check(self, page, pb, input_path):  # 检查错误图片
+        # 重置进度条
+        pb.value = 0
+        page.update()
         error_pics = []
-        start = time.perf_counter()
-        print("************** 检查异常图片中 **************")
+
         input_path = Path(input_path)
-        for file_path in input_path.rglob('*'):
+
+        files = list(input_path.rglob('*'))  # 获取所有文件列表
+        total_files = len(files)  # 总文件数
+
+        for index, file_path in enumerate(files, 1):  # 遍历文件，index 从 1 开始
             if file_path.is_file():
                 try:
                     suffix = file_path.suffix.lower()
@@ -111,44 +123,46 @@ class PictureProcessing:
                         Image.open(file_path).close()
                 except:
                     error_pics.append(file_path)
-        during = time.perf_counter() - start
-        print('################################################################')
-        if not error_pics:
-            print('无异常图片！')
-        for pic in error_pics:
-            print(f'{pic} 图片异常')
+            # 更新进度条
+            pb.value = index / total_files  # 计算当前进度
+            page.update()  # 更新页面
         return error_pics
     
     def delete_error_pics(self, error_pics):  # 删除错误图片
-        start = time.perf_counter()
         for i, pic in enumerate(error_pics, 1):
             pic.unlink()
-            during = time.perf_counter() - start
-            progress(i, len(error_pics), 50, during)
 
-    def modify_suffix(self, input_path, less_suffixes, more_suffix):  # 将文件夹下所有少数后缀图片 转为多数后缀
-        start = time.perf_counter()
+    def modify_suffix(self, page, pb, input_path, other_suffixes, more_suffix):  # 将文件夹下所有少数后缀图片 转为多数后缀
         input_path = Path(input_path)
-        for file_path in input_path.rglob('*'):
-            if file_path.is_file():
-                if file_path.suffix.lower() == less_suffixes:
-                    new_file_path = file_path.with_suffix(more_suffix)
-                    file_path.rename(new_file_path)
-        during = time.perf_counter() - start
-        progress(len(list(input_path.rglob('*'))), len(list(input_path.rglob('*'))), 50, during)
+        files = list(input_path.rglob('*'))  # 获取所有文件列表
+        total_files = len(files)  # 总文件数
+        for index, file_path in enumerate(files, 1):  # 遍历文件，index 从 1 开始
+            if file_path.is_file() and file_path.suffix.lower() in other_suffixes:
+                # 将文件后缀改为 more_suffix 中的第一个元素
+                new_file_path = file_path.with_suffix(more_suffix[0])
+                file_path.rename(new_file_path)
+            
+            # 更新进度条
+            pb.value = index / total_files  # 计算当前进度
+            page.update()  # 更新页面
 
-    def split_picture(self, pic_files, temp_path, more_suffix, right_to_left):  # 分割图片并改变阅读顺序
-        start = time.perf_counter()
+    def split_picture(self, page, pb, pic_files, temp_path, more_suffix, right_to_left):  # 分割图片并改变阅读顺序
         temp_path = Path(temp_path)
         temp_path.mkdir(parents=True, exist_ok=True)
         print("************** 分割并改变阅读顺序中 **************")
+
+        # 计算总文件数
+        total_files = sum(len(list(Path(path).rglob('*' + more_suffix))) for path in pic_files)
+        processed_files = 0  # 已处理的文件数
         for path in pic_files:
             path = Path(path)
             file_name = path.name  # 获取文件路径中的文件名
-            file_path = temp_path / file_name  # 组合成新的子文件夹地址的路径
             newdir = temp_path / file_name  # 组合成新的子文件夹地址的路径
             newdir.mkdir(parents=True, exist_ok=True)
-            for z, file in enumerate(path.rglob('*' + more_suffix), 1):  # 循环路径下所有指定后缀文件
+
+            # 获取当前文件夹下的所有指定后缀文件
+            files = list(path.rglob('*' + more_suffix))
+            for z, file in enumerate(files, 1):  # 循环路径下所有指定后缀文件
                 filepath = file
                 img = Image.open(filepath)  # 打开该文件
                 size = img.size  # 获取该文件尺寸信息
@@ -170,20 +184,26 @@ class PictureProcessing:
                         else:
                             region.save(newdir / f'_{2 * z - 1:03d}{more_suffix}')
                 img.close()  # 关闭已打开的图片，防止占用内存
-        during = time.perf_counter() - start
-        progress(len(pic_files), len(pic_files), 50, during)
+                
+                # 更新进度条
+                processed_files += 1
+                pb.value = processed_files / total_files  # 计算当前进度
+                page.update()  # 更新页面
+
 
 class PdfProcessing:
     def __init__(self):
         """
         """
 
-    def convert_pdf(self, temp_path, pic_files, more_suffix):  # 将每个文件转为pdf
+    def convert_pdf(self, page, pb, temp_path, pic_subfolders, more_suffix):  # 将每个文件转为pdf
         start = time.perf_counter()
-        x = 0
-        print("************** 将图片转为pdf文档中 **************")
-
-        for pic_folder in pic_files:
+        total_files = len(pic_subfolders)  # 总文件数
+        processed_files = 0  # 已处理的文件数
+        print("************** 图片转为pdf文档 **************")
+        print("图片文件路径：", pic_subfolders)
+        print("图片文件后缀：", more_suffix)
+        for pic_folder in pic_subfolders:
             file_name = Path(pic_folder).stem
             image_list = []
             more_suffix_files = []
@@ -191,7 +211,6 @@ class PdfProcessing:
             for pic_folder_path in Path(pic_folder).rglob('*'):
                 if pic_folder_path.is_file() and pic_folder_path.suffix.lower() in more_suffix:
                     more_suffix_files.append(pic_folder_path)  # 构建多数后缀图片的路径并添加至more_suffix_files数组中
-
             more_suffix_files.sort(key=lambda file: int(re.findall(r"\d+", file.name)[-1]))  # 更改排序方式为正常排序,如:9,10
 
             for i in more_suffix_files:  # 在该数组中遍历
@@ -208,19 +227,21 @@ class PdfProcessing:
                 im.save(output_pdf_path, save_all=True, append_images=image_list)  # 保存文件为pdf 名称为子文件夹名称
                 image_list.clear()
 
-            # 此处为进度条显示
-            x = x + 1
-            during = time.perf_counter() - start
-            progress(x, int(len(pic_files)), 50, during)
+            # 更新进度条
+            processed_files += 1
+            pb.value = processed_files / total_files  # 计算当前进度
+            page.update()  # 更新页面
 
-    def merge_pdf(self, pdf_files, output_path, finally_file_name):  # 合并pdf
-        start = time.perf_counter()
-        x = 0
+        during = time.perf_counter() - start
+
+    def merge_pdf(self, page, pb, pdf_files, output_path, finally_file_name):  # 合并pdf
         print("************** 合并pdf文档中 **************")
         bookmark_num = [0, ]
         output = PdfWriter()
         output_pages = 0
         merged_pdf_path = Path(output_path) / f"{finally_file_name}.pdf"
+        total_files = len(pdf_files)  # 总文件数
+        processed_files = 0  # 已处理的文件数
 
         for pdf_file in pdf_files:
             # 读取源pdf文件
@@ -240,13 +261,14 @@ class PdfProcessing:
                 for i_page in range(0, page_count):
                     output.add_page(input.pages[i_page])
 
+            # 更新进度条
+            processed_files += 1
+            pb.value = processed_files / total_files  # 计算当前进度
+            page.update()  # 更新页面
+
         # 保存合并后的PDF文件内容到文件中
         with merged_pdf_path.open('wb') as output_stream:
             output.write(output_stream)
-
-        x = x + 1
-        during = time.perf_counter() - start
-        # progress(x, int(len(pic_files)), 50, during)
 
         return bookmark_num
 
@@ -273,26 +295,40 @@ class PdfProcessing:
         print("已为PDF文件添加目录！")
 
 
-def all_run(input_path, output_path, temp_path, less_suffixes, more_suffix, s_pic, right_to_left, finally_file_name):
+def all_run(page, pb, status, input_path, output_path, temp_path, other_suffixes, more_suffix, s_pics, right_to_left, finally_file_name):
     try:
+        total_task = 6 if s_pics else 4
         time1 = time.time()
         fs = FileSearcher()
-        pic_files = fs.search_files_in_subfolders(input_path)
+        task_index = 2
+        status.value = f"{task_index+1}/{total_task} - 搜索文件夹"
+        page.update()
+        pic_files = fs.search_files_in_subfolders(page, pb, input_path)
         
+        status.value = f"{task_index+1}/{total_task} - 修改后缀"
+        page.update()
         pp = PictureProcessing()
-        pp.modify_suffix(input_path, less_suffixes, more_suffix)
+        pp.modify_suffix(page, pb, input_path, other_suffixes, more_suffix)
 
-        if s_pic:
-            pp.split_picture(pic_files, temp_path, more_suffix, right_to_left)
-            pic_files = fs.search_files_in_subfolders(temp_path)
+        if s_pics:
+            status.value = f"{task_index+1}/{total_task} - 分割图片"
+            page.update()
+            pp.split_picture(page, pb, pic_files, temp_path, more_suffix, right_to_left)
+            status.value = f"{task_index+1}/{total_task} - 重新搜索"
+            page.update()
+            pic_files = fs.search_files_in_subfolders(page, pb, temp_path)
         else:
             Path(temp_path).mkdir(parents=True, exist_ok=True)
 
         pdfp = PdfProcessing()
-        pdfp.convert_pdf(temp_path, pic_files, more_suffix)
+        status.value = f"{task_index+1}/{total_task} - 转换PDF"
+        page.update()
+        pdfp.convert_pdf(page, pb, temp_path, pic_files, more_suffix)
         pdf_files = fs.search_pdf(temp_path)
-        bookmark_num = pdfp.merge_pdf(pdf_files, output_path, finally_file_name)
-        pdfp.add_bookmark(output_path, bookmark_num, finally_file_name)
+        status.value = f"{task_index+1}/{total_task} - 合并PDF"
+        page.update()
+        bookmark_num = pdfp.merge_pdf(page, pb, pdf_files, output_path, finally_file_name)
+        # pdfp.add_bookmark(output_path, bookmark_num, finally_file_name)
         
         shutil.rmtree(temp_path)
         time2 = time.time()
@@ -316,7 +352,9 @@ def all_run(input_path, output_path, temp_path, less_suffixes, more_suffix, s_pi
                 shutil.rmtree(temp_path)
             except Exception as e:
                 print(f"删除临时文件夹时发生错误: {e}")
-
+        status.value = "✅"
+        status.color = "green"
+        page.update()
 
 
 # conda create -n 虚拟环境名字 python==3.6 #创建虚拟环境
