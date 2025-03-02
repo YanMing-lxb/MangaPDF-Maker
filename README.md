@@ -30,7 +30,10 @@
 
 [![Python](https://img.shields.io/badge/Python-3.12%2B-blue)](https://www.python.org/) [![Flet](https://img.shields.io/badge/Flet-0.27.1-green)](https://flet.dev/) [![License](https://img.shields.io/badge/License-GPL3.0-yellow)](LICENSE)
 
-一款基于Flet框架开发的漫画图片转PDF工具，支持图片自动分割。
+<div align="center">
+  <img src="src/assets/logo.png" alt="MangaPDF Maker Logo" width="200">
+  <p><span style="font-size: 1.2em; font-weight: bold;">一款基于Flet框架开发的漫画图片转PDF工具，支持图片自动分割。</span></p>
+</div>
 
 ## ✨ 功能特性
 
