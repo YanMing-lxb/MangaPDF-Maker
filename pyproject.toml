@@ -1,6 +1,6 @@
 [project]
 name = "mangapdf-maker"
-version = "1.4.1"
+version = "1.4.2"
 description = ""
 readme = "README.md"
 requires-python = ">=3.12"
