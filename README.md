@@ -19,7 +19,7 @@
  *  -----------------------------------------------------------------------
  * Author       : 焱铭
  * Date         : 2025-02-06 15:17:19 +0800
- * LastEditTime : 2025-03-02 22:16:33 +0800
+ * LastEditTime : 2025-03-02 22:33:28 +0800
  * Github       : https://github.com/YanMing-lxb/
  * FilePath     : /MangaPDF-Maker/README.md
  * Description  : 
@@ -47,8 +47,8 @@
 ## 🖥️ 界面操作指南
 
 <div style="display: flex; justify-content: center; align-items: center;">
-    <img src="https://github.com/user-attachments/assets/2bdd0270-6ea9-4b33-8cf5-e793d6310f4e" alt="Image 1" style="margin-right: 10px;">
-    <img src="https://github.com/user-attachments/assets/521327d4-1f5a-4f53-9c4d-98bfb8a3f300" alt="Image 2">
+    <img src="https://github.com/user-attachments/assets/2bdd0270-6ea9-4b33-8cf5-e793d6310f4e" alt="Image 1" style="width: 250px; margin-right: 10px;">
+    <img src="https://github.com/user-attachments/assets/521327d4-1f5a-4f53-9c4d-98bfb8a3f300" alt="Image 2" style="width: 250px;">
 </div>
 
 ## 📦 开发指南
