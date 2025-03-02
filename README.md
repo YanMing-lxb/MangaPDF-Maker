@@ -19,7 +19,7 @@
  *  -----------------------------------------------------------------------
  * Author       : 焱铭
  * Date         : 2025-02-06 15:17:19 +0800
- * LastEditTime : 2025-02-24 21:57:13 +0800
+ * LastEditTime : 2025-03-02 22:16:33 +0800
  * Github       : https://github.com/YanMing-lxb/
  * FilePath     : /MangaPDF-Maker/README.md
  * Description  : 
@@ -32,7 +32,7 @@
 
 <div align="center">
   <img src="src/assets/logo.png" alt="MangaPDF Maker Logo" width="200">
-  <p><span style="font-size: 1.2em; font-weight: bold;">一款基于Flet框架开发的漫画图片转PDF工具，支持图片自动分割。</span></p>
+  <p><span style="font-size: 2em; font-weight: bold; font-style: italic;">一款基于Flet框架开发的漫画图片转PDF工具，支持图片自动分割。</span></p>
 </div>
 
 ## ✨ 功能特性
