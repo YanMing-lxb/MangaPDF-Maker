@@ -19,7 +19,7 @@
  *  -----------------------------------------------------------------------
  * Author       : 焱铭
  * Date         : 2025-02-06 15:17:19 +0800
- * LastEditTime : 2025-02-24 19:13:57 +0800
+ * LastEditTime : 2025-02-24 21:57:13 +0800
  * Github       : https://github.com/YanMing-lxb/
  * FilePath     : /MangaPDF-Maker/README.md
  * Description  : 
@@ -63,14 +63,12 @@ cd MangaPDF-Maker
 
 #### Windows单文件打包
 
-```bash
-python -m nuitka --standalone --onefile  --windows-console-mode=disable  --windows-icon-from-ico=./src/assets/ico.ico --include-data-dir=./src/assets=assets --company-name="YanMing" --product-name="MangaPDF Maker" --file-version="1.4.1" --product-version="1.4.1" --copyright="YanMing" --output-filename="MangaPDF Maker" ./src/main.py
-``
+
 
 #### 使用Flet打包
 
 ```bash
-flet pack -i ./src/assets/ico.ico -n "MangaPDF Maker" ./src/main.py
+flet pack -i ./src/assets/logo.png -n "MangaPDF Maker" ./src/main.py
 ```
 
 ```bash
@@ -80,13 +78,13 @@ flet build -v --product "MangaPDF Maker" --product "MangaPDF Maker" windows
 ### Pyinstaller打包
 
 ```bash
-pyinstaller --onefile --noconsole --clean -i src/assets/ico.ico -n "MangaPDF Maker" --add-data "src/assets;assets" src/main.py 
+pyinstaller --onefile --noconsole --clean -i src/assets/logo.png -n "MangaPDF Maker" --add-data "src/assets;assets" src/main.py 
 ```
 
 ### Nuitka打包
 
 ```bash
-python -m nuitka --standalone --onefile --windows-disable-console --user-package-configuration-file=./scripts/nuitka_flet.yml --windows-icon-from-ico=./src/assets/ico.ico --include-data-dir=./src/assets=assets --output-filename="MangaPDF Maker" ./src/main.py
+python -m nuitka --standalone --onefile  --windows-console-mode=disable  --windows-icon-from-ico=./src/assets/ico.ico --include-data-dir=./src/assets=assets --company-name="YanMing" --product-name="MangaPDF Maker" --file-version="1.4.1" --product-version="1.4.1" --copyright="YanMing" --output-filename="MangaPDF Maker" ./src/main.py
 ```
 
 ## 🤝 参与贡献

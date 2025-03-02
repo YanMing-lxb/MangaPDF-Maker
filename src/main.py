@@ -59,7 +59,7 @@ async def get_latest_version():
 def main(page: ft.Page):
     if page.platform == ft.PagePlatform.LINUX or page.platform == ft.PagePlatform.MACOS or page.platform == ft.PagePlatform.WINDOWS:
         if page.platform == ft.PagePlatform.WINDOWS:
-            page.window.icon = "ico.ico"  # 窗口图标
+            page.window.icon = "logo.ico"  # 窗口图标
         page.window.height = 500
         page.window.width = 500
         page.window.center()
