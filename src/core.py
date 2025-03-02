@@ -71,7 +71,6 @@ class PictureProcessing:
             page.update()  # 更新页面
 
         # 找到数量最多的后缀
-        print(suffix_count)
         most_suffix = max(suffix_count, key=suffix_count.get) if suffix_count else None
         # 其他后缀及其数量
         other_suffixes = [suffix for suffix in suffix_count.keys() if suffix != most_suffix]

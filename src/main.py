@@ -271,11 +271,6 @@ def main(page: ft.Page):
         actions_alignment=ft.MainAxisAlignment.END,
     )
 
-    dlg_warning = ft.AlertDialog(
-        title=ft.Text("警告"),
-        content=ft.Text(),
-        actions=[ft.TextButton("确定", on_click=lambda e: page.close(dlg_update))])
-
     col_input_path = ft.Row([eb_input_path, tt_selected_directory])
 
     col_pic_operation = ft.Column([
