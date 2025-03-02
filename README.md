@@ -43,7 +43,13 @@
 - 🎯 多平台支持（Windows/macOS/Linux）
 - 📦 一键打包为独立可执行文件
 
+
 ## 🖥️ 界面操作指南
+
+<div style="display: flex; justify-content: center; align-items: center;">
+    <img src="https://github.com/user-attachments/assets/2bdd0270-6ea9-4b33-8cf5-e793d6310f4e" alt="Image 1" style="margin-right: 10px;">
+    <img src="https://github.com/user-attachments/assets/521327d4-1f5a-4f53-9c4d-98bfb8a3f300" alt="Image 2">
+</div>
 
 ## 📦 开发指南
 
