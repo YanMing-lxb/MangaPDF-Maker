@@ -172,19 +172,48 @@ class PdfProcessing:
         """
         """
 
-    def convert_pdf(self, page, pb, temp_path, pic_subfolders, more_suffix):  # 将每个文件转为pdf
+    def convert_pdf(self, page, pb, input_path, temp_path, pic_subfolders, more_suffix):  # 将每个文件转为pdf
         start = time.perf_counter()
         total_files = len(pic_subfolders)  # 总文件数
         processed_files = 0  # 已处理的文件数
         print("************** 图片转为pdf文档 **************")
         print("图片文件路径：", pic_subfolders)
         print("图片文件后缀：", more_suffix)
-        for pic_folder in pic_subfolders:
-            file_name = Path(pic_folder).stem
+        if pic_subfolders: # 如果文件夹下存在子文件夹才执行
+            for pic_folder in pic_subfolders:
+                file_name = Path(pic_folder).stem
+                image_list = []
+                more_suffix_files = []
+
+                for pic_folder_path in Path(pic_folder).rglob('*'):
+                    if pic_folder_path.is_file() and pic_folder_path.suffix.lower() in more_suffix:
+                        more_suffix_files.append(pic_folder_path)  # 构建多数后缀图片的路径并添加至more_suffix_files数组中
+                more_suffix_files.sort(key=lambda file: int(re.findall(r"\d+", file.name)[-1]))  # 更改排序方式为正常排序,如:9,10
+
+                for i in more_suffix_files:  # 在该数组中遍历
+                    with i.open('rb') as op:  # 打开该图片
+                        image = Image.open(op)  # 用Image库代开
+                        im = image.convert('RGB')  # 转换为RGB数据
+                        image_list.append(im)
+
+                with more_suffix_files[0].open('rb') as op:  # 设置封面图片
+                    image = Image.open(op)
+                    im = image.convert('RGB')
+                    del (image_list[0])  # 为防止第一张图片重复
+                    output_pdf_path = Path(temp_path) / f"{file_name}.pdf"
+                    im.save(output_pdf_path, save_all=True, append_images=image_list)  # 保存文件为pdf 名称为子文件夹名称
+                    image_list.clear()
+
+                # 更新进度条
+                processed_files += 1
+                pb.value = processed_files / total_files  # 计算当前进度
+                page.update()  # 更新页面
+        else:
+            file_name = Path(input_path).stem
             image_list = []
             more_suffix_files = []
 
-            for pic_folder_path in Path(pic_folder).rglob('*'):
+            for pic_folder_path in Path(input_path).rglob('*'):
                 if pic_folder_path.is_file() and pic_folder_path.suffix.lower() in more_suffix:
                     more_suffix_files.append(pic_folder_path)  # 构建多数后缀图片的路径并添加至more_suffix_files数组中
             more_suffix_files.sort(key=lambda file: int(re.findall(r"\d+", file.name)[-1]))  # 更改排序方式为正常排序,如:9,10
@@ -203,50 +232,46 @@ class PdfProcessing:
                 im.save(output_pdf_path, save_all=True, append_images=image_list)  # 保存文件为pdf 名称为子文件夹名称
                 image_list.clear()
 
-            # 更新进度条
-            processed_files += 1
-            pb.value = processed_files / total_files  # 计算当前进度
-            page.update()  # 更新页面
-
         during = time.perf_counter() - start
 
     def merge_pdf(self, page, pb, pdf_files, output_path, finally_file_name):  # 合并pdf
         print("************** 合并pdf文档中 **************")
-        bookmark_num = [
-            0,
-        ]
+        bookmark_num = [0]
         output = PdfWriter()
         output_pages = 0
         merged_pdf_path = Path(output_path) / f"{finally_file_name}.pdf"
         total_files = len(pdf_files)  # 总文件数
         processed_files = 0  # 已处理的文件数
 
-        for pdf_file in pdf_files:
-            # 读取源pdf文件
-            with Path(pdf_file).open("rb") as f:
-                input = PdfReader(f)
+        if len(pdf_files) == 1:
+            pass
+        else:
+            for pdf_file in pdf_files:
+                # 读取源pdf文件
+                with Path(pdf_file).open("rb") as f:
+                    input = PdfReader(f)
 
-                # 如果pdf文件已经加密，必须首先解密才能使用pyPdf
-                if input.is_encrypted:
-                    input.decrypt("map")
-                # 获得源pdf文件中页面总数
-                page_count = len(input.pages)
-                output_pages += page_count
+                    # 如果pdf文件已经加密，必须首先解密才能使用pyPdf
+                    if input.is_encrypted:
+                        input.decrypt("map")
+                    # 获得源pdf文件中页面总数
+                    page_count = len(input.pages)
+                    output_pages += page_count
 
-                bookmark_num.append(output_pages)
+                    bookmark_num.append(output_pages)
 
-                # 分别将page添加到输出output中
-                for i_page in range(0, page_count):
-                    output.add_page(input.pages[i_page])
+                    # 分别将page添加到输出output中
+                    for i_page in range(0, page_count):
+                        output.add_page(input.pages[i_page])
 
-            # 更新进度条
-            processed_files += 1
-            pb.value = processed_files / total_files  # 计算当前进度
-            page.update()  # 更新页面
+                # 更新进度条
+                processed_files += 1
+                pb.value = processed_files / total_files  # 计算当前进度
+                page.update()  # 更新页面
 
-        # 保存合并后的PDF文件内容到文件中
-        with merged_pdf_path.open('wb') as output_stream:
-            output.write(output_stream)
+            # 保存合并后的PDF文件内容到文件中
+            with merged_pdf_path.open('wb') as output_stream:
+                output.write(output_stream)
 
         return bookmark_num
 
@@ -301,7 +326,7 @@ def all_run(page, pb, status, input_path, output_path, temp_path, other_suffixes
         pdfp = PdfProcessing()
         status.value = f"{task_index+1}/{total_task} - 转换PDF"
         page.update()
-        pdfp.convert_pdf(page, pb, temp_path, pic_files, more_suffix)
+        pdfp.convert_pdf(page, pb, input_path, temp_path, pic_files, more_suffix)
         pdf_files = fs.search_pdf(temp_path)
         status.value = f"{task_index+1}/{total_task} - 合并PDF"
         page.update()

@@ -124,7 +124,7 @@ def main(page: ft.Page):
             delete_error_status = self.ProgressBar['delete_error']['status']
             input_path = tt_selected_directory.value
 
-            status.value = "1/3 - 统计图片"
+            status.value = "1/2 - 统计图片"
             page.update()
             most_suffix, other_suffixes = pp.statistics_picture(page, pb, input_path)
 
@@ -133,7 +133,7 @@ def main(page: ft.Page):
 
             page.update()
 
-            status.value = "3/3 - 错误检查"
+            status.value = "2/2 - 错误检查"
             page.update()
             self.error_pics = pp.pic_check(page, pb, input_path)
             if self.error_pics:
@@ -270,6 +270,11 @@ def main(page: ft.Page):
         ],
         actions_alignment=ft.MainAxisAlignment.END,
     )
+
+    dlg_warning = ft.AlertDialog(
+        title=ft.Text("警告"),
+        content=ft.Text(),
+        actions=[ft.TextButton("确定", on_click=lambda e: page.close(dlg_update))])
 
     col_input_path = ft.Row([eb_input_path, tt_selected_directory])
 
