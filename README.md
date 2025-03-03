@@ -79,7 +79,7 @@ cd MangaPDF-Maker
 #### 使用Flet打包
 
 ```bash
-flet pack -i ./src/assets/logo.png -n "MangaPDF Maker" ./src/main.py
+flet pack -i ./src/assets/logo.png -n "MangaPDF Maker v1.4.3" ./src/main.py
 ```
 
 ```bash

@@ -5,7 +5,7 @@ import flet as ft
 from pathlib import Path
 from core import PictureProcessing, all_run
 
-current_version = "v1.4.2"  # 版本号变量
+current_version = "v1.4.3"  # 版本号变量
 
 
 async def get_latest_version():

@@ -243,7 +243,11 @@ class PdfProcessing:
         processed_files = 0  # 已处理的文件数
 
         if len(pdf_files) == 1:
-            pass
+            source_path = Path(pdf_files[0])  # 获取源文件路径
+            destination_path = Path(output_path) / source_path.name  # 构造目标路径，保留原文件名
+
+            # 移动文件
+            source_path.rename(destination_path)
         else:
             for pdf_file in pdf_files:
                 # 读取源pdf文件
