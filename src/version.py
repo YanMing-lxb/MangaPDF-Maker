@@ -26,7 +26,7 @@ Description  :
 #!/usr/bin/env python
 
 __project_name__ = 'MangaPDF-Maker'
-__version__ = '1.4.3'
+__version__ = '1.4.4'
 __date__ = '2025-05-24'
 __author__ = 'YanMing-lxb'
 __url__ = 'https://github.com/YanMing-lxb/MangaPDF-Maker'

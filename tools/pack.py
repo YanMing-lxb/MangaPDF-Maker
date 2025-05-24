@@ -38,7 +38,7 @@ sys.path.append(str(BASE_DIR))  # 关键路径设置
 from rich.theme import Theme
 from rich.console import Console
 
-from src.version import __project_name__, __version__, __team__, __url__ ,__description__
+from src.version import __project_name__, __author__, __version__, __url__
 
 if sys.stdout.encoding != 'UTF-8':
     sys.stdout.reconfigure(encoding='utf-8')
@@ -60,7 +60,7 @@ console = Console(theme=custom_theme)
 # 项目配置
 # ======================
 PROJECT_NAME = __project_name__
-ENTRY_POINT = Path("src/__main__.py")
+ENTRY_POINT = Path("src/main.py")
 DATA_DIR = Path("src/assets")
 ICON_FILE = Path("src/assets/logo.ico")
 REQUIREMENTS = "requirements.txt"
@@ -208,8 +208,8 @@ def run_pyinstaller(venv_name: str = VENV_NAME) -> bool:
         "-D",
         "--product-version", __version__,
         "--file-version", __version__,
-        "--company-name", __team__,
-        "--copyright", __team__,
+        "--company-name", __author__,
+        "--copyright", __author__,
         "--file-description", PROJECT_NAME,
         str(ENTRY_POINT.resolve())
     ]
@@ -246,7 +246,7 @@ def build_setup_installer(version: str = __version__) -> bool:
         "ISCC",
         f'/DMyAppName={PROJECT_NAME}',
         f'/DMyAppVersion={__version__}',
-        f'/DMyAppPublisher="{__team__.replace("\\n", "--")}"'
+        f'/DMyAppPublisher="{__author__.replace("\\n", "--")}"'
         f'/DMyAppURL={__url__}',
         f'/DMyAppExeName={PROJECT_NAME}.exe',
         f'/DMyOutputBaseFilename={PROJECT_NAME}-{__version__}-setup',
