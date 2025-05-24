@@ -1,22 +1,34 @@
+import os
+import sys
 import json
 import requests
 import threading
 import flet as ft
 from pathlib import Path
+from version import __version__, __author__, __project_name__, __url__
 from core import PictureProcessing, all_run
 
-current_version = "v1.4.3"  # 版本号变量
+current_version = f"v{__version__}"  # 版本号变量
 
+def resource_path(assets_filename):
+    """ 获取打包后或开发模式下的资源路径 """
+    if getattr(sys, 'frozen', False):  # 打包后
+        base_path = sys._MEIPASS
+        assets_path = os.path.join(base_path, "assets", assets_filename)
+    else:  # 开发模式下，基于 __main__.py 的位置向上找根目录
+        base_path = os.path.abspath(".")
+        assets_path = os.path.join(base_path, "src", "assets", assets_filename)
+    return assets_path
 
 async def get_latest_version():
     try:
         # 基础配置
-        repo_owner = "YanMing-lxb"
-        repo_name = "MangaPDF-Maker"
+        author = __author__
+        project_name = __project_name__
         headers = {"Accept": "application/vnd.github+json", "X-GitHub-Api-Version": "2022-11-28"}
 
         # 第一阶段：尝试获取最新release
-        release_url = f"https://api.github.com/repos/{repo_owner}/{repo_name}/releases/latest"
+        release_url = f"https://api.github.com/repos/{author}/{project_name}/releases/latest"
         release_response = requests.get(release_url, headers=headers, timeout=10)
 
         # 处理成功响应
@@ -28,7 +40,7 @@ async def get_latest_version():
 
         # 处理404响应（没有release时尝试获取tags）
         elif release_response.status_code == 404:
-            tags_url = f"https://api.github.com/repos/{repo_owner}/{repo_name}/tags"
+            tags_url = f"https://api.github.com/repos/{author}/{project_name}/tags"
             tags_response = requests.get(tags_url, headers=headers, timeout=10)
 
             if tags_response.status_code == 200:
@@ -59,7 +71,7 @@ async def get_latest_version():
 def main(page: ft.Page):
     if page.platform == ft.PagePlatform.LINUX or page.platform == ft.PagePlatform.MACOS or page.platform == ft.PagePlatform.WINDOWS:
         if page.platform == ft.PagePlatform.WINDOWS:
-            page.window.icon = "logo.ico"  # 窗口图标
+            page.window.icon = resource_path("logo.ico")  # 窗口图标
         page.window.height = 500
         page.window.width = 500
         page.window.center()
@@ -91,7 +103,7 @@ def main(page: ft.Page):
                 page.update()
 
         def open_github(self, e):
-            page.launch_url("https://github.com/YanMing-lxb/MangaPDF-Maker")
+            page.launch_url(__url__)
 
         async def check_update(self, e):
             latest_version = await get_latest_version()

@@ -1,0 +1,109 @@
+name: Publish MPM 🐍
+
+on:
+  push:
+    tags:
+      - v*.*.*  # 当推送以v开头的标签时触发此工作流
+
+jobs:
+  publish:
+    name: Build and Publish
+    runs-on: windows-latest
+
+    steps:
+      - name: Checkout source
+        uses: actions/checkout@v4
+
+      - name: Set up 🐍 Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.x"
+      
+      - name: Install Inno Setup
+        run: |
+          $url = "https://files.jrsoftware.org/is/6/innosetup-6.4.3.exe"
+          $installerPath = "$env:TEMP\innosetup-installer.exe"
+          Invoke-WebRequest -Uri $url -OutFile $installerPath
+          Start-Process -FilePath $installerPath -ArgumentList "/VERYSILENT /SUPPRESSMSGBOXES /DIR=C:\Program Files (x86)\Inno Setup 6" -Wait
+
+          # 将 Inno Setup 添加到 PATH 环境变量
+          [Environment]::SetEnvironmentVariable(
+            "PATH", 
+            "$env:PATH;C:\Program Files (x86)\Inno Setup 6", 
+            [EnvironmentVariableTarget]::Process
+          )
+        shell: pwsh
+
+      - name: Build 📦 source
+        run: |
+          cd ${{ github.workspace }}
+          $env:PYTHONIOENCODING = "utf-8"
+          python3 -m pip install --upgrade rich
+          python ${{ github.workspace }}\tools\pack.py pack
+          python ${{ github.workspace }}\tools\pack.py setup
+
+        shell: pwsh
+
+      - name: Extract tag name
+        id: extract_tag
+        run: echo "TAG_NAME=${GITHUB_REF#refs/tags/}" >> $GITHUB_ENV
+
+      - name: Generate Changelog
+        run: |
+          # Read the content of CHANGELOG.md
+          $changelog = Get-Content -Path "${env:GITHUB_WORKSPACE}\CHANGELOG.md" -Raw
+
+          # Get the tag name
+          $tag_name = "${env:TAG_NAME}"
+
+          # Define version header
+          $version_header = "## $tag_name"
+
+          # Check if changelog contains the version header
+          if ($changelog -match [regex]::Escape($version_header)) {
+              # Split the changelog into lines
+              $lines = $changelog -split [Environment]::NewLine
+
+              # Find index of the target header
+              $startIndex = -1
+              for ($i = 0; $i -lt $lines.Length; $i++) {
+                  if ($lines[$i] -match "^##\s+$tag_name") {
+                      $startIndex = $i
+                      break
+                  }
+              }
+
+              if ($startIndex -eq -1) {
+                  Write-Output "Version header not found"
+                  exit 1
+              }
+
+              # Find next header starting with '## '
+              $endIndex = $lines.Length
+              for ($i = $startIndex + 1; $i -lt $lines.Length; $i++) {
+                  if ($lines[$i] -match "^## ") {
+                      $endIndex = $i
+                      break
+                  }
+              }
+
+              # Extract content between this version header and the next one, excluding the version header line
+              $version_content = $lines[($startIndex + 1)..($endIndex - 1)] | Out-String
+
+              # Output and write to file
+              Write-Output $version_content
+              $version_content | Out-File -FilePath "${env:GITHUB_WORKSPACE}-CHANGELOG.txt" -Encoding utf8
+          } else {
+              Write-Output "Version $tag_name not found in CHANGELOG.md"
+              exit 1
+          }
+        shell: pwsh
+
+      - name: Publish to GitHub Release
+        uses: softprops/action-gh-release@v2
+        if: startsWith(github.ref, 'refs/tags/')
+        with:
+          body_path: ${{ github.workspace }}-CHANGELOG.txt
+          token: ${{ secrets.RELEASE}}
+          name: RefrTruck HeatLoad Solver ${{ github.ref_name }}
+          files: dist/*.exe
