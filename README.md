@@ -19,7 +19,7 @@
  *  -----------------------------------------------------------------------
  * Author       : 焱铭
  * Date         : 2025-02-06 15:17:19 +0800
- * LastEditTime : 2025-05-25 20:25:15 +0800
+ * LastEditTime : 2025-05-25 20:29:52 +0800
  * Github       : https://github.com/YanMing-lxb/
  * FilePath     : /MangaPDF-Maker/README.md
  * Description  : 
@@ -50,38 +50,31 @@
   </p>
 </div>
 
-## 📦 开发指南
+## 📦 安装教程
 
-### 前置要求
+<div align="center">
+  <p>
+    <img src="https://github.com/YanMing-lxb/MangaPDF-Maker/blob/main/assets/install-tutorial.gif?raw=true" style="margin-right: 10px;">
+  </p>
+</div>
 
-- Python 3.12+
-- Flet 0.27.1+
-- pypdf 5.3.0+
+## 🚀 使用教程
 
-### 安装步骤
+<div align="center">
+  <p>
+    <img src="https://github.com/YanMing-lxb/MangaPDF-Maker/blob/main/assets/use-tutorial.gif?raw=true" style="margin-right: 10px;">
+  </p>
+</div>
 
-克隆仓库
-
-```bash
-git clone https://github.com/YanMing-lxb/MangaPDF-Maker.git
-cd MangaPDF-Maker
-```
 ## 🤔更新缘由
 
-硕士毕业后没有申请到博士，在家休整一年，过年的时候表妹来我家，说我之前开发的软件她经常在工作中使用，用于将手机拍摄的资料整理成pdf文件提交备份，她希望这个软件能够支持更多的图片格式，能够指定生成文件的名称。对于妹妹的需求当然要实现了，同时那时候刚刚了解到flet可以开发出美观的界面，因此干脆就用flet重新弄了一下。
+硕士毕业后没有申请到博士，在家休整一年，过年的时候表妹来我家，说我之前开发的软件她经常在工作中使用，用于将手机拍摄的资料整理成pdf文件提交备份，她希望这个软件能够支持更多的图片格式，能够指定生成文件的名称。对于妹妹的需求当然要满足喽！正巧那时候也刚刚了解到flet可以开发出美观的界面，因此干脆就用flet重新弄了一下。
 
-其实很早就弄出来了，但是一直没能打包成setup文件，最近在学校做项目的时候刚好学会，因此就把MangaPDF-Maker重新打包了一下，分享给大家。
+其实很早就开发出来了，但是一直没能打包成setup文件，最近在学校做项目的时候刚好学会，因此就把 `MangaPDF-Maker` 重新打包了一下，分享给大家。
 
 ## 🤝 参与贡献
 
 欢迎通过Issue或Pull Request参与项目改进：
-
-## Fork项目仓库
-
-1. 创建特性分支（git checkout -b feature/AmazingFeature）
-2. 提交修改（git commit -m 'Add some AmazingFeature'）
-3. 推送到远程分支（git push origin feature/AmazingFeature）
-4. 发起Pull Request
 
 ## 📄 许可证
 
